@@ -1,0 +1,2 @@
+# For Railway deployment - defines the startup command
+web: gunicorn app_production:app

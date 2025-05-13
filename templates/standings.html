@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="page-title">Premier League Standings</h1>
+
+{% if teams %}
+<!-- Hidden element to pass data to JavaScript -->
+<script id="teams-data" type="application/json">
+    {{ teams|map(attribute='__dict__')|map('tojson')|list|tojson|safe }}
+</script>
+
+<!-- Data Visualization -->
+<div class="row">
+    <div class="col-md-8">
+        <div class="stats-container">
+            <h3 class="stats-title"><i class="fas fa-chart-bar"></i> Top 10 Teams by Points</h3>
+            <div style="height: 300px;">
+                <canvas id="standings-chart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stats-container">
+            <h3 class="stats-title"><i class="fas fa-chart-pie"></i> Results Distribution</h3>
+            <div style="height: 250px;">
+                <canvas id="distribution-chart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card" style="box-shadow: none; border: 1px solid var(--border-color);">
+    <div class="card-header">
+        <h3 style="margin-bottom: 0;"><i class="fas fa-table-list"></i> Full League Table</h3>
+    </div>
+    <div class="table-responsive">
+        <table class="table" style="margin-bottom: 0;">
+            <thead style="background-color: var(--surface-color); border-bottom: 2px solid var(--border-color);">
+                <tr>
+                    <th scope="col" style="width: 5%; text-align: center;" class="text-monospace">#</th>
+                    <th scope="col" style="width: 35%;">Club</th>
+                    <th scope="col" style="text-align: center;" class="text-monospace">MP</th>
+                    <th scope="col" style="text-align: center;" class="text-monospace">W</th>
+                    <th scope="col" style="text-align: center;" class="text-monospace">D</th>
+                    <th scope="col" style="text-align: center;" class="text-monospace">L</th>
+                    <th scope="col" style="text-align: center; font-weight: 700;" class="text-monospace">Pts</th>
+                    <th scope="col" style="width: 20%; text-align: center;">Form (Last 5)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for team in teams %}
+                <tr style="border-bottom: 1px solid var(--border-color);">
+                    <td scope="row" style="text-align: center;" class="text-monospace">
+                        {% if team.position <= 4 %}
+                            <span data-toggle="tooltip" title="Champions League qualification" style="color: var(--primary-color); font-weight: bold;">{{ team.position if team.position else loop.index }}</span>
+                        {% elif team.position >= 18 %}
+                            <span data-toggle="tooltip" title="Relegation zone" style="color: var(--danger-color); font-weight: bold;">{{ team.position if team.position else loop.index }}</span>
+                        {% else %}
+                            {{ team.position if team.position else loop.index }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div style="display: flex; align-items: center;">
+                            {% if team.logo_url %}
+                                <img src="{{ team.logo_url }}" alt="{{ team.name }}" style="width: 24px; height: 24px; margin-right: 10px; vertical-align: middle;">
+                            {% endif %}
+                            <a href="{{ url_for('team_page', team_name=team.name) }}" style="font-weight: 500;">{{ team.name }}</a>
+                        </div>
+                    </td>
+                    <td style="text-align: center;" class="text-monospace">{{ team.played }}</td>
+                    <td style="text-align: center;" class="text-monospace">{{ team.win }}</td>
+                    <td style="text-align: center;" class="text-monospace">{{ team.draw }}</td>
+                    <td style="text-align: center;" class="text-monospace">{{ team.loss }}</td>
+                    <td style="text-align: center; font-weight: 700;" class="text-monospace">{{ team.points }}</td>
+                    <td style="text-align: center;">
+                        {% if team.form %}
+                            {% for result_raw in team.form.split(',')[:5] %}
+                                {% set res_upper = result_raw|trim|upper if result_raw else '' %}
+                                {% set display_char = res_upper if res_upper in ['W', 'D', 'L'] else (result_raw|trim if result_raw and result_raw|trim else '-') %}
+                                {% set class_suffix = res_upper if res_upper in ['W', 'D', 'L'] else 'N' %}
+                                <span class="badge text-monospace badge-form-{{ class_suffix }}"
+                                      title="{{ 'Win' if class_suffix == 'W' else ('Loss' if class_suffix == 'L' else ('Draw' if class_suffix == 'D' else 'N/A')) }}">
+                                    {{ display_char }}
+                                </span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="text-color-muted text-small">N/A</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div style="margin-top: 1.5rem;" class="text-small text-color-muted">
+    <p>
+        <span style="color: var(--primary-color); font-weight: bold;">●</span> Positions 1-4: Champions League qualification
+        <span style="margin-left: 1rem; color: var(--danger-color); font-weight: bold;">●</span> Positions 18-20: Relegation zone
+    </p>
+</div>
+
+<script src="{{ url_for('static', filename='js/standings-charts.js') }}"></script>
+{% else %}
+<div class="card">
+    <div class="card-body text-center text-color-muted" style="padding: 2.5rem;">
+        <i class="fas fa-table-list" style="font-size: 3rem; margin-bottom: 1rem; color: var(--text-color-lighter);"></i>
+        <p>Standings are currently unavailable. Please check back later.</p>
+        
+        {% if current_user.is_admin %}
+        <a href="{{ url_for('update_fpl_data_route') }}" class="btn btn-primary">
+            <i class="fas fa-sync-alt"></i> Update Data
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

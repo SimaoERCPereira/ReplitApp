@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h1 class="page-title" style="margin-bottom: 0; border-bottom: none;">{{ user.username }}'s Profile</h1>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 text-center">
+                    <!-- Placeholder for profile picture -->
+                    <img src="https://via.placeholder.com/150/007bff/FFFFFF?Text={{user.username[0]}}" 
+                         alt="{{ user.username }}'s profile picture" 
+                         class="img-fluid rounded-circle mb-3" 
+                         style="width: 120px; height: 120px; border: 3px solid var(--primary-color);">
+                    <h4>{{ user.username }}</h4>
+                    <span class="badge badge-primary">{{ user.favorite_team }} Fan</span>
+                </div>
+                <div class="col-md-9">
+                    <h5>Bio</h5>
+                    <p>{{ user.bio }}</p>
+                    <hr>
+                    <p><strong>Favorite Team:</strong> {{ user.favorite_team }}</p>
+                    <p><strong>Joined The People's Pitch:</strong> {{ user.join_date }}</p>
+                    <!-- Placeholder for edit profile button -->
+                    <button class="btn btn-secondary btn-sm">Edit Profile</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h3>Recent Activity</h3>
+        </div>
+        <div class="card-body">
+            {% if user.recent_activity %}
+                <ul class="list-group">
+                    {% for activity in user.recent_activity %}
+                        <li class="list-group-item">
+                            {% if activity.type == 'comment' %}
+                                <p class="mb-0">Commented on <a href="{{ url_for('match_discussion', match_id=activity.match_id) }}">Match {{ activity.match_id }}</a>: "{{ activity.content }}"</p>
+                            {% elif activity.type == 'post' %}
+                                <p class="mb-0">Posted in <a href="{{ url_for('team_page', team_name=activity.team_name) }}">{{ activity.team_name }} Hub</a>: "{{ activity.content }}"</p>
+                            {% endif %}
+                            <small class="text-muted">A few moments ago</small>  <!-- Placeholder for actual timestamp -->
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>{{ user.username }} hasn't been active yet.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h3>Connections</h3>
+        </div>
+        <div class="card-body">
+            <p class="text-muted">Following/follower features are coming soon!</p>
+            <!-- Placeholder for lists of followed users/followers -->
+        </div>
+    </div>
+
+{% endblock %}

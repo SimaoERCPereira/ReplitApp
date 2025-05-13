@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}    <h1 class="page-title">Premier League</h1>
+    {% if not matches and not all_gameweeks %} 
+    {% endif %}      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 style="margin-bottom: 0;"><i class="fas fa-futbol"></i> Matches</h3>
+            {% if all_gameweeks %}
+            <div class="gameweek-selector">
+                <form method="GET" action="{{ url_for('home') }}" class="d-flex align-items-center">
+                    <select name="gameweek" id="gameweek-select" class="form-select" onchange="this.form.submit()" aria-label="Select Gameweek" style="width: auto; min-width: 150px;">
+                        {% for gw in all_gameweeks %}
+                            <option value="{{ gw }}" {% if gw == selected_gameweek %}selected{% endif %}>Gameweek {{ gw }}</option>
+                        {% endfor %}
+                    </select>
+                    <noscript><button type="submit" class="btn btn-primary btn-sm ms-2">View</button></noscript>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+        <ul class="list-group list-group-flush">            {% for match in matches %}
+                <li class="list-group-item match-list-item">
+                    <div class="match-row">
+                        <div class="match-teams">
+                            <a href="{{ url_for('match_discussion', match_id=match.id) }}" class="match-link">
+                                <div class="team home-team">
+                                    <div class="team-container">
+                                        <span class="team-name" title="{{ match.home_team.name if match.home_team else 'N/A' }}">{{ match.home_team.name if match.home_team else 'N/A' }}</span>
+                                        {% if match.home_team and match.home_team.logo_url %}
+                                            <img src="{{ match.home_team.logo_url }}" alt="{{ match.home_team.name }}" class="team-logo">
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <div class="vs-container">
+                                    <span class="vs-divider">vs</span> 
+                                </div>
+                                
+                                <div class="team away-team">
+                                    <div class="team-container">
+                                        {% if match.away_team and match.away_team.logo_url %}
+                                            <img src="{{ match.away_team.logo_url }}" alt="{{ match.away_team.name }}" class="team-logo">
+                                        {% endif %}
+                                        <span class="team-name" title="{{ match.away_team.name if match.away_team else 'N/A' }}">{{ match.away_team.name if match.away_team else 'N/A' }}</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="match-info">
+                            <span class="text-monospace text-small match-time">{{ match.match_date.strftime('%b %d, %H:%M') if match.match_date else 'No date' }}</span>
+                            {% if match.status == 'Finished' %}
+                                <span class="badge text-monospace match-score" style="background-color: var(--secondary-color); color: var(--surface-color);">FT {{ match.score_team1 if match.score_team1 is not none else '-' }} : {{ match.score_team2 if match.score_team2 is not none else '-' }}</span>
+                            {% elif match.status == 'Live' %}
+                                <span class="badge badge-live text-monospace match-score">{{ match.score_team1 if match.score_team1 is not none else '0' }} : {{ match.score_team2 if match.score_team2 is not none else '0' }}</span>
+                            {% elif match.status == 'Upcoming' %}
+                                <span class="badge" style="background-color: var(--accent-color); color: var(--surface-color);">Upcoming</span>
+                            {% else %}
+                                <span class="badge" style="background-color: var(--text-color-muted); color: var(--surface-color);">{{ match.status }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </li>
+            {% else %}
+                <li class="list-group-item text-center text-muted" style="padding: 1.5rem;">
+                    {% if selected_gameweek %}
+                        No matches found for Gameweek {{ selected_gameweek }}.
+                    {% else %}
+                        No matches or gameweeks available at this time.
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    {# Minimalist approach might not need these prominent buttons here, user can navigate via header #}
+    {# {% if current_user.is_authenticated %}
+    <div style="margin-top: 2rem; text-align: center;">
+        <a href="{{ url_for('profile_page', username=current_user.username) }}" class="btn btn-secondary">My Profile</a>
+    </div>
+    {% endif %} #}
+{% endblock %}
