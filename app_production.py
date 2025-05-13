@@ -498,7 +498,8 @@ def update_data_cron():
 def health_check():
     try:
         # Try a simple database query to verify connectivity
-        db.session.execute('SELECT 1')
+        from sqlalchemy import text
+        db.session.execute(text('SELECT 1'))
         return jsonify({'status': 'healthy', 'database': 'connected'})
     except Exception as e:
         return jsonify({'status': 'unhealthy', 'error': str(e)}), 500
