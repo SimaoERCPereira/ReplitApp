@@ -1,0 +1,12 @@
+modules = ["web", "python-3.12"]
+run = "  python app_production.py"
+
+[nix]
+channel = "stable-24_05"
+
+[deployment]
+run = ["sh", "-c", "  python app_production.py"]
+
+[[ports]]
+localPort = 3000
+externalPort = 80
