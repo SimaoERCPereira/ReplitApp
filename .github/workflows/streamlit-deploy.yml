@@ -1,0 +1,40 @@
+name: Streamlit App Deployment
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Lint with flake8
+      run: |
+        pip install flake8
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+  # This job is just a placeholder to notify Streamlit Cloud to redeploy
+  # Streamlit Cloud will automatically detect changes to the repo and redeploy
+  notify-streamlit:
+    needs: test
+    runs-on: ubuntu-latest
+    if: success() && github.ref == 'refs/heads/main'
+    steps:
+      - name: Notify Streamlit Cloud (no actual API call needed)
+        run: |
+          echo "Changes pushed to main branch. Streamlit Cloud should detect these changes automatically."
+          echo "If you've set up a webhook or deploy URL with Streamlit, you could add it here."

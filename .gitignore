@@ -8,5 +8,18 @@ ENV/
 instance/
 .DS_Store
 *.sqlite
+*.db
+*.sqlite3
 .idea/
 .vscode/
+
+# Streamlit specific
+.streamlit/secrets.toml
+.streamlit/config.toml
+
+# Logs
+*.log
+
+# Temporary files
+tmp/
+temp/
