@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="page-title">Premier League Standings</h1>
+<h1 class="text-2xl font-bold mb-6">Premier League Standings</h1>
 
 {% if teams %}
 <!-- Hidden element to pass data to JavaScript -->
@@ -10,81 +10,77 @@
 </script>
 
 <!-- Data Visualization -->
-<div class="row">
-    <div class="col-md-8">
-        <div class="stats-container">
-            <h3 class="stats-title"><i class="fas fa-chart-bar"></i> Top 10 Teams by Points</h3>
-            <div style="height: 300px;">
-                <canvas id="standings-chart"></canvas>
-            </div>
-        </div>
+<div class="flex flex-col md:flex-row gap-6 mb-8">
+    <div class="flex-1 bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="fas fa-chart-bar"></i> Top 10 Teams by Points</h3>
+        <div class="h-72"><canvas id="standings-chart"></canvas></div>
     </div>
-    <div class="col-md-4">
-        <div class="stats-container">
-            <h3 class="stats-title"><i class="fas fa-chart-pie"></i> Results Distribution</h3>
-            <div style="height: 250px;">
-                <canvas id="distribution-chart"></canvas>
-            </div>
-        </div>
+    <div class="w-full md:w-1/3 bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold mb-4 flex items-center gap-2"><i class="fas fa-chart-pie"></i> Results Distribution</h3>
+        <div class="h-60"><canvas id="distribution-chart"></canvas></div>
     </div>
 </div>
 
-<div class="card" style="box-shadow: none; border: 1px solid var(--border-color);">
-    <div class="card-header">
-        <h3 style="margin-bottom: 0;"><i class="fas fa-table-list"></i> Full League Table</h3>
+<div class="bg-white rounded-lg shadow mb-8">
+    <div class="px-6 py-4 border-b">
+        <h3 class="text-lg font-semibold flex items-center gap-2"><i class="fas fa-table-list"></i> Full League Table</h3>
     </div>
-    <div class="table-responsive">
-        <table class="table" style="margin-bottom: 0;">
-            <thead style="background-color: var(--surface-color); border-bottom: 2px solid var(--border-color);">
+    <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+            <thead class="bg-gray-50 border-b">
                 <tr>
-                    <th scope="col" style="width: 5%; text-align: center;" class="text-monospace">#</th>
-                    <th scope="col" style="width: 35%;">Club</th>
-                    <th scope="col" style="text-align: center;" class="text-monospace">MP</th>
-                    <th scope="col" style="text-align: center;" class="text-monospace">W</th>
-                    <th scope="col" style="text-align: center;" class="text-monospace">D</th>
-                    <th scope="col" style="text-align: center;" class="text-monospace">L</th>
-                    <th scope="col" style="text-align: center; font-weight: 700;" class="text-monospace">Pts</th>
-                    <th scope="col" style="width: 20%; text-align: center;">Form (Last 5)</th>
+                    <th class="text-center font-mono font-semibold py-2">#</th>
+                    <th class="text-left font-semibold py-2">Club</th>
+                    <th class="text-center font-mono font-semibold py-2">MP</th>
+                    <th class="text-center font-mono font-semibold py-2">W</th>
+                    <th class="text-center font-mono font-semibold py-2">D</th>
+                    <th class="text-center font-mono font-semibold py-2">L</th>
+                    <th class="text-center font-mono font-bold py-2">Pts</th>
+                    <th class="text-center font-semibold py-2">Form (Last 5)</th>
                 </tr>
             </thead>
             <tbody>
                 {% for team in teams %}
-                <tr style="border-bottom: 1px solid var(--border-color);">
-                    <td scope="row" style="text-align: center;" class="text-monospace">
+                <tr class="border-b last:border-b-0">
+                    <td class="text-center font-mono">
                         {% if team.position <= 4 %}
-                            <span data-toggle="tooltip" title="Champions League qualification" style="color: var(--primary-color); font-weight: bold;">{{ team.position if team.position else loop.index }}</span>
+                            <span title="Champions League qualification" class="text-blue-600 font-bold">{{ team.position if team.position else loop.index }}</span>
                         {% elif team.position >= 18 %}
-                            <span data-toggle="tooltip" title="Relegation zone" style="color: var(--danger-color); font-weight: bold;">{{ team.position if team.position else loop.index }}</span>
+                            <span title="Relegation zone" class="text-red-500 font-bold">{{ team.position if team.position else loop.index }}</span>
                         {% else %}
                             {{ team.position if team.position else loop.index }}
                         {% endif %}
                     </td>
                     <td>
-                        <div style="display: flex; align-items: center;">
+                        <div class="flex items-center gap-2">
                             {% if team.logo_url %}
-                                <img src="{{ team.logo_url }}" alt="{{ team.name }}" style="width: 24px; height: 24px; margin-right: 10px; vertical-align: middle;">
+                                <img src="{{ team.logo_url }}" alt="{{ team.name }}" class="w-6 h-6 object-contain rounded-full">
                             {% endif %}
-                            <a href="{{ url_for('team_page', team_name=team.name) }}" style="font-weight: 500;">{{ team.name }}</a>
+                            <a href="{{ url_for('team_page', team_name=team.name) }}" class="font-medium hover:underline">{{ team.name }}</a>
                         </div>
                     </td>
-                    <td style="text-align: center;" class="text-monospace">{{ team.played }}</td>
-                    <td style="text-align: center;" class="text-monospace">{{ team.win }}</td>
-                    <td style="text-align: center;" class="text-monospace">{{ team.draw }}</td>
-                    <td style="text-align: center;" class="text-monospace">{{ team.loss }}</td>
-                    <td style="text-align: center; font-weight: 700;" class="text-monospace">{{ team.points }}</td>
-                    <td style="text-align: center;">
+                    <td class="text-center font-mono">{{ team.played }}</td>
+                    <td class="text-center font-mono">{{ team.win }}</td>
+                    <td class="text-center font-mono">{{ team.draw }}</td>
+                    <td class="text-center font-mono">{{ team.loss }}</td>
+                    <td class="text-center font-mono font-bold">{{ team.points }}</td>
+                    <td class="text-center">
                         {% if team.form %}
                             {% for result_raw in team.form.split(',')[:5] %}
                                 {% set res_upper = result_raw|trim|upper if result_raw else '' %}
                                 {% set display_char = res_upper if res_upper in ['W', 'D', 'L'] else (result_raw|trim if result_raw and result_raw|trim else '-') %}
                                 {% set class_suffix = res_upper if res_upper in ['W', 'D', 'L'] else 'N' %}
-                                <span class="badge text-monospace badge-form-{{ class_suffix }}"
-                                      title="{{ 'Win' if class_suffix == 'W' else ('Loss' if class_suffix == 'L' else ('Draw' if class_suffix == 'D' else 'N/A')) }}">
+                                <span class="inline-block px-2 py-1 rounded font-mono text-xs mx-0.5 {{
+                                    'bg-green-500 text-white' if class_suffix == 'W' else
+                                    'bg-yellow-400 text-slate-900' if class_suffix == 'D' else
+                                    'bg-red-500 text-white' if class_suffix == 'L' else
+                                    'bg-gray-300 text-gray-700'
+                                }}" title="{{ 'Win' if class_suffix == 'W' else ('Loss' if class_suffix == 'L' else ('Draw' if class_suffix == 'D' else 'N/A')) }}">
                                     {{ display_char }}
                                 </span>
                             {% endfor %}
                         {% else %}
-                            <span class="text-color-muted text-small">N/A</span>
+                            <span class="text-gray-400 text-xs">N/A</span>
                         {% endif %}
                     </td>
                 </tr>
@@ -94,26 +90,22 @@
     </div>
 </div>
 
-<div style="margin-top: 1.5rem;" class="text-small text-color-muted">
+<div class="mt-6 text-xs text-gray-400">
     <p>
-        <span style="color: var(--primary-color); font-weight: bold;">●</span> Positions 1-4: Champions League qualification
-        <span style="margin-left: 1rem; color: var(--danger-color); font-weight: bold;">●</span> Positions 18-20: Relegation zone
+        <span class="text-blue-600 font-bold">●</span> Positions 1-4: Champions League qualification
+        <span class="ml-4 text-red-500 font-bold">●</span> Positions 18-20: Relegation zone
     </p>
 </div>
 
 <script src="{{ url_for('static', filename='js/standings-charts.js') }}"></script>
 {% else %}
-<div class="card">
-    <div class="card-body text-center text-color-muted" style="padding: 2.5rem;">
-        <i class="fas fa-table-list" style="font-size: 3rem; margin-bottom: 1rem; color: var(--text-color-lighter);"></i>
-        <p>Standings are currently unavailable. Please check back later.</p>
-        
-        {% if current_user.is_admin %}
-        <a href="{{ url_for('update_fpl_data_route') }}" class="btn btn-primary">
-            <i class="fas fa-sync-alt"></i> Update Data
-        </a>
-        {% endif %}
-    </div>
+<div class="bg-white rounded-lg shadow p-8 text-center text-gray-400">
+    <i class="fas fa-table-list text-4xl mb-2"></i>
+    <p>Standings are currently unavailable. Please check back later.</p>
+    
+    {% if current_user.is_admin %}
+    <a href="{{ url_for('update_fpl_data_route') }}" class="inline-block mt-4 px-4 py-2 rounded bg-blue-600 text-white font-semibold"><i class="fas fa-sync-alt"></i> Update Data</a>
+    {% endif %}
 </div>
 {% endif %}
 {% endblock %}

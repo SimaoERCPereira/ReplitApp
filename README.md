@@ -1,88 +1,59 @@
-# The People's Pitch - Premier League Football Fan Community
+# TeamTalk
 
-A responsive Flask web application for football fans to follow Premier League matches, view standings, and discuss matches with other supporters.
+## Setup
 
-## Features
-
-- User authentication (register, login, profile pages)
-- Premier League match listings and schedule by gameweek
-- Live match updates and discussions
-- Team standings and statistics
-- Team detail pages with news and information
-- Auto-updating data from the Fantasy Premier League API
-- Mobile-responsive design with dark mode support
-
-## Local Development Setup
-
-1. Clone the repository
-2. Install dependencies:
-   ```
+1. Install dependencies:
+   ```bash
    pip install -r requirements.txt
    ```
-3. Create a `.env` file (see `.env.example` for template)
-4. Run the development server:
-   ```
-   python app.py
-   ```
 
-## Production Deployment Options
-
-### Option 1: Railway (Recommended for easy setup)
-
-1. Sign up for [Railway](https://railway.app/)
-2. Connect your GitHub repository
-3. Set environment variables in Railway:
-   - `DATABASE_URL` (will be automatically set by Railway)
+2. Set environment variables (see .env.example):
    - `SECRET_KEY`
-   - `FLASK_ENV=production`
+   - `DATABASE_URL` (optional for local dev; defaults to SQLite)
+   - `FLASK_ENV`
    - `CRON_API_KEY`
-4. Add a PostgreSQL database from the Railway dashboard
-5. Deploy app with the command: `gunicorn app_production:app`
+   - `REDIS_URL` (for caching)
 
-### Option 2: Docker Deployment
+   **Note:**
+   - By default, the app uses SQLite at `instance/teamtalk.db` for local development.
+   - To use Postgres or MySQL, set the `DATABASE_URL` environment variable accordingly.
 
-1. Make sure Docker and Docker Compose are installed
-2. Update `.env` file with your secure credentials
-3. Build and start services:
-   ```
-   docker-compose up -d
-   ```
-4. Access the application at http://localhost:5000
-
-### Option 3: Traditional VPS/Cloud Provider
-
-1. Set up a server (Ubuntu recommended) with:
-   - Python 3.8+
-   - PostgreSQL
-   - Nginx
-2. Clone the repository
-3. Set up a Python virtual environment
-4. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
-5. Configure Nginx to proxy to Gunicorn
-6. Set up systemd services for the app and updater
-7. Start services:
-   ```
-   sudo systemctl start thepeoplepitch
-   sudo systemctl start thepeoplepitch-updater
+3. Run the app:
+   ```bash
+   flask run
    ```
 
-## Scheduled Tasks
+## Docker
 
-The application includes an updater script that periodically refreshes data from the Fantasy Premier League API. This ensures that match results, fixtures, and team standings are always up-to-date.
+1. Build the image:
+   ```bash
+   docker build -t teamtalk .
+   ```
+2. Run the container:
+   ```bash
+   docker run -p 8000:8000 --env-file .env teamtalk
+   ```
 
-## Security Notes
+## Heroku
 
-- Never commit your `.env` file with real credentials
-- Change the default admin password immediately
-- Use HTTPS in production environments
-- Consider adding rate limiting for API endpoints
+1. Install the Heroku CLI and login.
+2. Create a Heroku app:
+   ```bash
+   heroku create teamtalk-app
+   ```
+3. Add Postgres and Redis add-ons:
+   ```bash
+   heroku addons:create heroku-postgresql:hobby-dev
+   heroku addons:create heroku-redis:hobby-dev
+   ```
+4. Deploy:
+   ```bash
+   git push heroku main
+   ```
 
-## License
+## Testing
 
-MIT License
-=======
-# The-Peoples-Pitch
->>>>>>> 6d64619c40e857e0fb07d08cc38b70454284cc4a
+Run tests with:
+```bash
+pytest
+``` 

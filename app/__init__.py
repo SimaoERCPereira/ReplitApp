@@ -1,0 +1,31 @@
+from flask import Flask
+from .extensions import db, login_manager, cache, limiter, talisman
+from .routes.main import main_bp
+from .routes.auth import auth_bp
+from .routes.api import api_bp
+import os
+
+def create_app():
+    app = Flask(__name__, static_folder="../static", template_folder="../templates")
+    db_url = os.getenv("DATABASE_URL") or "sqlite:///instance/teamtalk.db"
+    app.config.from_mapping(
+        SECRET_KEY=os.getenv("SECRET_KEY", os.urandom(24)),
+        SQLALCHEMY_DATABASE_URI=db_url,
+        SQLALCHEMY_TRACK_MODIFICATIONS=False,
+        CACHE_TYPE='redis',
+        CACHE_REDIS_URL=os.getenv('REDIS_URL', 'redis://localhost:6379/0'),
+        CACHE_DEFAULT_TIMEOUT=300
+    )
+    db.init_app(app)
+    login_manager.init_app(app)
+    cache.init_app(app)
+    limiter.init_app(app)
+    # Only enforce HTTPS in production
+    if os.getenv("FLASK_ENV") == "production":
+        talisman.init_app(app)
+    else:
+        talisman.init_app(app, force_https=False)
+    app.register_blueprint(main_bp)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(api_bp, url_prefix='/api/v1')
+    return app 

@@ -1,233 +1,176 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="team-header" style="position: relative; margin-bottom: 2rem; background-color: var(--surface-color); border-radius: var(--border-radius-lg); box-shadow: var(--box-shadow); padding: 0; overflow: hidden;">
-    <!-- Hero banner with team color -->
-    <div style="height: 120px; background: linear-gradient(to right, var(--primary-color), var(--info-color)); position: relative;">
-        <!-- Team logo overlay -->
+<div class="relative mb-8 bg-white rounded-lg shadow overflow-hidden">
+    <div class="h-32 bg-gradient-to-r from-blue-600 to-blue-400 relative">
         {% if team.logo_url %}
-        <div style="position: absolute; top: 50%; left: 5%; transform: translateY(-50%); background-color: white; border-radius: 50%; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; box-shadow: var(--box-shadow);">
-            <img src="{{ team.logo_url }}" alt="{{ team.name }}" style="max-width: 80px; max-height: 80px;">
+        <div class="absolute top-1/2 left-8 transform -translate-y-1/2 bg-white rounded-full w-24 h-24 flex items-center justify-center shadow-lg">
+            <img src="{{ team.logo_url }}" alt="{{ team.name }}" class="max-w-[80px] max-h-[80px]">
         </div>
         {% endif %}
     </div>
-    
-    <div style="padding: 1.5rem;">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap;">
+    <div class="p-6">
+        <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
             <div>
-                <h1 style="font-size: 2.2rem; font-weight: 800; margin-bottom: 0.25rem;">{{ team.name }}</h1>
-                <div style="display: flex; align-items: center; gap: 1rem; color: var(--text-color-muted);">
+                <h1 class="text-2xl font-bold mb-1">{{ team.name }}</h1>
+                <div class="flex items-center gap-4 text-gray-400 text-sm">
                     <span><i class="fas fa-map-marker-alt"></i> {{ team.stadium }}</span>
                     <span><i class="fas fa-users"></i> {{ team.fans_count }} fans</span>
                 </div>
             </div>
             <div>
                 {% if current_user.is_authenticated %}
-                <button class="btn btn-outline">
-                    <i class="fas fa-star"></i> Follow Team
-                </button>
+                <button class="px-4 py-2 rounded border border-blue-600 text-blue-600 font-semibold hover:bg-blue-50 transition"><i class="fas fa-star"></i> Follow Team</button>
                 {% endif %}
             </div>
         </div>
     </div>
 </div>
-
-<div class="row">
-    <div class="col-md-8">
-        <!-- Team News Feed -->
-        <div class="card">
-            <div class="card-header">
-                <h3 style="margin-bottom: 0;"><i class="fas fa-newspaper"></i> Team News & Updates</h3>
+<div class="flex flex-col md:flex-row gap-8">
+    <div class="flex-1">
+        <div class="bg-white rounded-lg shadow mb-8">
+            <div class="px-6 py-4 border-b">
+                <h3 class="text-lg font-semibold mb-0 flex items-center gap-2"><i class="fas fa-newspaper"></i> Team News & Updates</h3>
             </div>
-            <div class="card-body">
+            <div class="px-6 py-6">
                 {% if current_user.is_authenticated %}
-                <div class="post-form" style="margin-bottom: 2rem;">
-                    <form>
-                        <div class="form-group">
-                            <textarea class="form-control" placeholder="Share news or thoughts about {{ team.name }}..." rows="3"></textarea>
+                <form class="mb-6">
+                    <textarea class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-400 mb-2" placeholder="Share news or thoughts about {{ team.name }}..." rows="3"></textarea>
+                    <div class="flex justify-between items-center">
+                        <div class="flex gap-2">
+                            <button type="button" class="px-3 py-1 rounded border border-gray-300 text-gray-600 font-semibold hover:bg-gray-100 transition text-xs"><i class="fas fa-image"></i> Photo</button>
+                            <button type="button" class="px-3 py-1 rounded border border-gray-300 text-gray-600 font-semibold hover:bg-gray-100 transition text-xs"><i class="fas fa-poll"></i> Poll</button>
                         </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <div>
-                                <button type="button" class="btn btn-sm btn-outline" style="margin-right: 0.5rem;">
-                                    <i class="fas fa-image"></i> Photo
-                                </button>
-                                <button type="button" class="btn btn-sm btn-outline">
-                                    <i class="fas fa-poll"></i> Poll
-                                </button>
-                            </div>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-paper-plane"></i> Post
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                        <button type="submit" class="px-4 py-2 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 transition text-xs"><i class="fas fa-paper-plane"></i> Post</button>
+                    </div>
+                </form>
                 {% endif %}
-                
-                <!-- News Feed -->
-                <div class="team-feed">
+                <div>
                     {% for item in team.news %}
-                    <div class="feed-item" style="border-bottom: 1px solid var(--border-color); padding-bottom: 1.5rem; margin-bottom: 1.5rem;">
-                        <h4 style="font-size: 1.2rem; margin-bottom: 0.5rem;">{{ item.title }}</h4>
+                    <div class="border-b last:border-b-0 pb-6 mb-6">
+                        <h4 class="text-base font-semibold mb-1">{{ item.title }}</h4>
                         <p>{{ item.summary }}</p>
-                        <div style="display: flex; justify-content: space-between; margin-top: 0.75rem;">
-                            <span class="text-small" style="color: var(--text-color-muted);">
-                                <i class="fas fa-calendar-alt"></i> {{ item.date }}
-                            </span>
-                            <div>
-                                <button class="btn btn-sm btn-outline" style="margin-right: 0.5rem;">
-                                    <i class="fas fa-thumbs-up"></i> Like
-                                </button>
-                                <button class="btn btn-sm btn-outline">
-                                    <i class="fas fa-comment"></i> Comment
-                                </button>
+                        <div class="flex justify-between items-center mt-3">
+                            <span class="text-xs text-gray-400"><i class="fas fa-calendar-alt"></i> {{ item.date }}</span>
+                            <div class="flex gap-2">
+                                <button class="px-3 py-1 rounded border border-gray-300 text-gray-600 font-semibold hover:bg-gray-100 transition text-xs"><i class="fas fa-thumbs-up"></i> Like</button>
+                                <button class="px-3 py-1 rounded border border-gray-300 text-gray-600 font-semibold hover:bg-gray-100 transition text-xs"><i class="fas fa-comment"></i> Comment</button>
                             </div>
                         </div>
                     </div>
                     {% else %}
-                    <div style="text-align: center; padding: 2rem 0; color: var(--text-color-muted);">
-                        <i class="fas fa-newspaper" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                    <div class="text-center py-8 text-gray-400">
+                        <i class="fas fa-newspaper text-2xl mb-2"></i>
                         <p>No team news available at the moment.</p>
                     </div>
                     {% endfor %}
                 </div>
             </div>
         </div>
-        
-        <!-- Fan Polls -->
-        <div class="card" style="margin-top: 2rem;">
-            <div class="card-header">
-                <h3 style="margin-bottom: 0;"><i class="fas fa-poll"></i> Fan Polls</h3>
+        <div class="bg-white rounded-lg shadow mb-8">
+            <div class="px-6 py-4 border-b">
+                <h3 class="text-lg font-semibold mb-0 flex items-center gap-2"><i class="fas fa-poll"></i> Fan Polls</h3>
             </div>
-            <div class="card-body">
-                <div class="poll-container">
-                    <h4 style="font-size: 1.1rem;">Player of the Month</h4>
-                    <form>
-                        <div class="form-check" style="margin-bottom: 0.75rem;">
-                            <input type="radio" id="player1" name="player_poll" class="form-check-input">
-                            <label for="player1" class="form-check-label">Player A (37%)</label>
-                            <div style="height: 6px; background-color: #E2E8F0; border-radius: 3px; margin-top: 6px;">
-                                <div style="width: 37%; height: 100%; background-color: var(--primary-color); border-radius: 3px;"></div>
-                            </div>
-                        </div>
-                        <div class="form-check" style="margin-bottom: 0.75rem;">
-                            <input type="radio" id="player2" name="player_poll" class="form-check-input">
-                            <label for="player2" class="form-check-label">Player B (48%)</label>
-                            <div style="height: 6px; background-color: #E2E8F0; border-radius: 3px; margin-top: 6px;">
-                                <div style="width: 48%; height: 100%; background-color: var(--primary-color); border-radius: 3px;"></div>
-                            </div>
-                        </div>
-                        <div class="form-check" style="margin-bottom: 0.75rem;">
-                            <input type="radio" id="player3" name="player_poll" class="form-check-input">
-                            <label for="player3" class="form-check-label">Player C (15%)</label>
-                            <div style="height: 6px; background-color: #E2E8F0; border-radius: 3px; margin-top: 6px;">
-                                <div style="width: 15%; height: 100%; background-color: var(--primary-color); border-radius: 3px;"></div>
-                            </div>
-                        </div>
-                        <div style="margin-top: 1.25rem; text-align: right;">
-                            <button type="submit" class="btn btn-primary btn-sm">Vote</button>
-                        </div>
-                    </form>
-                </div>
-                
-                <div style="border-top: 1px solid var(--border-color); margin: 1.5rem 0; padding-top: 1.5rem;">
-                    <h4 style="font-size: 1.1rem;">Will we finish in the top 4?</h4>
-                    <div style="display: flex; margin: 1rem 0;">
-                        <div style="flex: 6; height: 30px; background-color: var(--accent-color); border-radius: 4px 0 0 4px; display: flex; justify-content: center; align-items: center; color: white; font-weight: 600;">
-                            Yes (60%)
-                        </div>
-                        <div style="flex: 4; height: 30px; background-color: var(--danger-color); border-radius: 0 4px 4px 0; display: flex; justify-content: center; align-items: center; color: white; font-weight: 600;">
-                            No (40%)
-                        </div>
+            <div class="px-6 py-6">
+                <h4 class="font-semibold mb-2">Player of the Month</h4>
+                <form>
+                    <div class="mb-3">
+                        <label class="flex items-center gap-2"><input type="radio" name="player_poll" class="mr-2"> Player A (37%)</label>
+                        <div class="h-1.5 bg-gray-200 rounded mt-1"><div class="h-1.5 bg-blue-600 rounded" style="width: 37%"></div></div>
                     </div>
-                    <div style="text-align: center; color: var(--text-color-muted); font-size: 0.9rem;">
-                        Based on 235 votes
+                    <div class="mb-3">
+                        <label class="flex items-center gap-2"><input type="radio" name="player_poll" class="mr-2"> Player B (48%)</label>
+                        <div class="h-1.5 bg-gray-200 rounded mt-1"><div class="h-1.5 bg-blue-600 rounded" style="width: 48%"></div></div>
                     </div>
+                    <div class="mb-3">
+                        <label class="flex items-center gap-2"><input type="radio" name="player_poll" class="mr-2"> Player C (15%)</label>
+                        <div class="h-1.5 bg-gray-200 rounded mt-1"><div class="h-1.5 bg-blue-600 rounded" style="width: 15%"></div></div>
+                    </div>
+                    <div class="text-right mt-4">
+                        <button type="submit" class="px-4 py-2 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 transition text-xs">Vote</button>
+                    </div>
+                </form>
+                <div class="border-t mt-6 pt-6">
+                    <h4 class="font-semibold mb-2">Will we finish in the top 4?</h4>
+                    <div class="flex mt-4 mb-2">
+                        <div class="flex-6 h-8 bg-green-500 rounded-l flex items-center justify-center text-white font-semibold">Yes (60%)</div>
+                        <div class="flex-4 h-8 bg-red-500 rounded-r flex items-center justify-center text-white font-semibold">No (40%)</div>
+                    </div>
+                    <div class="text-center text-gray-400 text-xs">Based on 235 votes</div>
                 </div>
             </div>
         </div>
     </div>
-    
-    <div class="col-md-4">
-        <!-- Team Stats Card -->
-        <div class="card">
-            <div class="card-header">
-                <h3 style="margin-bottom: 0;"><i class="fas fa-chart-line"></i> Team Stats</h3>
+    <div class="w-full md:w-1/3 flex flex-col gap-8">
+        <div class="bg-white rounded-lg shadow">
+            <div class="px-6 py-4 border-b">
+                <h3 class="text-lg font-semibold mb-0 flex items-center gap-2"><i class="fas fa-chart-line"></i> Team Stats</h3>
             </div>
-            <div class="card-body" style="padding: 0;">
-                <div style="padding: 1rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-around; text-align: center;">
+            <div class="px-6 py-6">
+                <div class="flex justify-around text-center border-b pb-4 mb-4">
                     <div>
-                        <div style="font-size: 1.75rem; font-weight: 700; color: var(--success-color);">{{ team.win }}</div>
-                        <div style="color: var(--text-color-muted); font-size: 0.9rem;">Wins</div>
+                        <div class="text-2xl font-bold text-green-600">{{ team.win }}</div>
+                        <div class="text-gray-400 text-xs">Wins</div>
                     </div>
                     <div>
-                        <div style="font-size: 1.75rem; font-weight: 700; color: var(--warning-color);">{{ team.draw }}</div>
-                        <div style="color: var(--text-color-muted); font-size: 0.9rem;">Draws</div>
+                        <div class="text-2xl font-bold text-yellow-500">{{ team.draw }}</div>
+                        <div class="text-gray-400 text-xs">Draws</div>
                     </div>
                     <div>
-                        <div style="font-size: 1.75rem; font-weight: 700; color: var(--danger-color);">{{ team.loss }}</div>
-                        <div style="color: var(--text-color-muted); font-size: 0.9rem;">Losses</div>
+                        <div class="text-2xl font-bold text-red-500">{{ team.loss }}</div>
+                        <div class="text-gray-400 text-xs">Losses</div>
                     </div>
                 </div>
-                
-                <div style="padding: 1rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                <div class="flex justify-between items-center border-b pb-4 mb-4">
                     <div>
-                        <div style="font-weight: 600;">Current Position</div>
-                        <div style="color: var(--text-color-muted); font-size: 0.9rem;">Premier League</div>
+                        <div class="font-semibold">Current Position</div>
+                        <div class="text-gray-400 text-xs">Premier League</div>
                     </div>
-                    <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary-color);">
-                        {{ team.position }}{% if team.position == 1 %}st{% elif team.position == 2 %}nd{% elif team.position == 3 %}rd{% else %}th{% endif %}
-                    </div>
+                    <div class="text-xl font-bold text-blue-600">{{ team.position }}{% if team.position == 1 %}st{% elif team.position == 2 %}nd{% elif team.position == 3 %}rd{% else %}th{% endif %}</div>
                 </div>
-                
-                <div style="padding: 1rem;">
-                    <div style="font-weight: 600; margin-bottom: 0.5rem;">Recent Form</div>
-                    <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                <div>
+                    <div class="font-semibold mb-2">Recent Form</div>
+                    <div class="flex gap-2 mt-2">
                         {% if team.form %}
                             {% for result_raw in team.form.split(',')[:5] %}
                                 {% set res_upper = result_raw|trim|upper if result_raw else '' %}
                                 {% set display_char = res_upper if res_upper in ['W', 'D', 'L'] else (result_raw|trim if result_raw and result_raw|trim else '-') %}
                                 {% set class_suffix = res_upper if res_upper in ['W', 'D', 'L'] else 'N' %}
-                                <span class="badge text-monospace badge-form-{{ class_suffix }}" style="font-size: 1rem; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;"
-                                      title="{{ 'Win' if class_suffix == 'W' else ('Loss' if class_suffix == 'L' else ('Draw' if class_suffix == 'D' else 'N/A')) }}">
+                                <span class="inline-block px-2 py-1 rounded font-mono text-xs mx-0.5 {{
+                                    'bg-green-500 text-white' if class_suffix == 'W' else
+                                    'bg-yellow-400 text-slate-900' if class_suffix == 'D' else
+                                    'bg-red-500 text-white' if class_suffix == 'L' else
+                                    'bg-gray-300 text-gray-700'
+                                }}" title="{{ 'Win' if class_suffix == 'W' else ('Loss' if class_suffix == 'L' else ('Draw' if class_suffix == 'D' else 'N/A')) }}">
                                     {{ display_char }}
                                 </span>
                             {% endfor %}
                         {% else %}
-                            <span class="text-color-muted">No recent form data available</span>
+                            <span class="text-gray-400">No recent form data available</span>
                         {% endif %}
                     </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Upcoming Fixtures Card -->
-        <div class="card" style="margin-top: 1.5rem;">
-            <div class="card-header">
-                <h3 style="margin-bottom: 0;"><i class="fas fa-calendar-alt"></i> Upcoming Fixtures</h3>
+        <div class="bg-white rounded-lg shadow">
+            <div class="px-6 py-4 border-b">
+                <h3 class="text-lg font-semibold mb-0 flex items-center gap-2"><i class="fas fa-calendar-alt"></i> Upcoming Fixtures</h3>
             </div>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span>vs Arsenal (H)</span>
-                        <span class="text-small text-monospace">May 16, 2025</span>
-                    </div>
+            <ul>
+                <li class="flex justify-between items-center px-6 py-3 border-b last:border-b-0">
+                    <span>vs Arsenal (H)</span>
+                    <span class="text-xs font-mono text-gray-400">May 16, 2025</span>
                 </li>
-                <li class="list-group-item">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span>vs Chelsea (A)</span>
-                        <span class="text-small text-monospace">May 23, 2025</span>
-                    </div>
+                <li class="flex justify-between items-center px-6 py-3 border-b last:border-b-0">
+                    <span>vs Chelsea (A)</span>
+                    <span class="text-xs font-mono text-gray-400">May 23, 2025</span>
                 </li>
-                <li class="list-group-item">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span>vs Man City (H)</span>
-                        <span class="text-small text-monospace">May 30, 2025</span>
-                    </div>
+                <li class="flex justify-between items-center px-6 py-3 border-b last:border-b-0">
+                    <span>vs Man City (H)</span>
+                    <span class="text-xs font-mono text-gray-400">May 30, 2025</span>
                 </li>
-                <li class="list-group-item" style="text-align: center;">
-                    <a href="#" class="btn btn-sm btn-outline" style="width: 100%;">
-                        <i class="fas fa-calendar-alt"></i> View Full Fixture List
-                    </a>
+                <li class="text-center px-6 py-3">
+                    <a href="#" class="inline-block px-4 py-2 rounded border border-gray-300 text-gray-600 font-semibold hover:bg-gray-100 transition text-xs"><i class="fas fa-calendar-alt"></i> View Full Fixture List</a>
                 </li>
             </ul>
         </div>

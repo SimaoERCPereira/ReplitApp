@@ -1,119 +1,83 @@
 {% extends "base.html" %}
 
-{% block content %}    <div class="match-header-info" style="margin-bottom: 2rem; padding: 1.5rem; background-color: var(--surface-color); border-radius: var(--border-radius-lg); box-shadow: var(--box-shadow); position: relative; overflow: hidden;">
-        <!-- Background pattern for visual appeal -->
-        <div style="position: absolute; top: 0; left: 0; right: 0; height: 8px; background: linear-gradient(to right, var(--primary-color), var(--accent-color));"></div>
-        
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
-            <div style="display: flex; align-items: center; flex: 1; justify-content: flex-end; padding-right: 20px;">
-                {% if match.home_team and match.home_team.logo_url %}
-                    <img src="{{ match.home_team.logo_url }}" alt="{{ match.home_team.name }}" style="height: 48px; width: auto; margin-right: 12px;">
-                {% endif %}
-                <span class="team-name" style="font-size: 1.5rem; font-weight: 700;">{{ match.home_team.name if match.home_team else 'N/A' }}</span>
-            </div>
-            
-            <div style="text-align: center; padding: 0 15px; display: flex; flex-direction: column; align-items: center;">
-                {% if match.status == 'Finished' %}
-                    <div class="match-score" style="font-size: 1.8rem; font-weight: 700; min-width: 100px; background-color: var(--secondary-color); color: var(--surface-color); padding: 6px 15px; border-radius: var(--border-radius); margin-bottom: 8px;">
-                        {{ match.score_team1 if match.score_team1 is not none else '0' }} : {{ match.score_team2 if match.score_team2 is not none else '0' }}
-                    </div>
-                    <span class="badge" style="background-color: var(--secondary-color); margin-bottom: 8px;">Full Time</span>
-                {% elif match.status == 'Live' %}
-                    <div class="match-score badge-live" style="font-size: 1.8rem; font-weight: 700; min-width: 100px; background-color: var(--danger-color); color: var(--surface-color); padding: 6px 15px; border-radius: var(--border-radius); margin-bottom: 8px;">
-                        {{ match.score_team1 if match.score_team1 is not none else '0' }} : {{ match.score_team2 if match.score_team2 is not none else '0' }}
-                    </div>
-                    <span class="badge badge-live" style="margin-bottom: 8px;">LIVE</span>
-                {% elif match.status == 'Upcoming' %}
-                    <div class="match-time" style="font-size: 1.3rem; font-weight: 600; margin-bottom: 8px;">
-                        <i class="far fa-clock" style="margin-right: 5px;"></i> {{ match.match_date.strftime('%H:%M') if match.match_date else 'TBD' }}
-                    </div>
-                    <span class="badge" style="background-color: var(--accent-color); margin-bottom: 8px;">Upcoming</span>                {% else %}
-                    <div class="match-time vs-divider" style="font-size: 1.3rem; font-weight: 600; margin-bottom: 8px; text-align: center; width: 100%; font-family: var(--font-family-monospace);">vs</div>
-                    <span class="badge" style="background-color: var(--text-color-muted); margin-bottom: 8px;">{{ match.status }}</span>
-                {% endif %}
-                
-                <div class="match-date text-monospace text-small" style="color: var(--text-color-muted);">
-                    {{ match.match_date.strftime('%A, %b %d, %Y') if match.match_date else 'Date TBD' }}
-                </div>
-                
-                {% if match.gameweek %}
-                <div class="gameweek text-small" style="margin-top: 5px;">
-                    <span class="badge badge-info">Gameweek {{ match.gameweek }}</span>
-                </div>
-                {% endif %}
-            </div>
-            
-            <div style="display: flex; align-items: center; flex: 1; justify-content: flex-start; padding-left: 20px;">
-                <span class="team-name" style="font-size: 1.5rem; font-weight: 700;">{{ match.away_team.name if match.away_team else 'N/A' }}</span>
-                {% if match.away_team and match.away_team.logo_url %}
-                    <img src="{{ match.away_team.logo_url }}" alt="{{ match.away_team.name }}" style="height: 48px; width: auto; margin-left: 12px;">
-                {% endif %}
-            </div>
-        </div>
-    </div>    <div class="card">
-        <div class="card-header">
-            <h3 style="font-size: 1.25rem; margin-bottom:0;"><i class="fas fa-comments"></i> Match Discussion</h3>
-        </div>
-        <div class="card-body">
-            {% if current_user.is_authenticated %}
-            <form method="POST" action="{{ url_for('match_discussion', match_id=match.id) }}" style="margin-bottom: 2rem;">
-                <div class="form-group">
-                    <textarea id="commentText" name="comment" class="form-control" placeholder="What are your thoughts on this match? (Max 280 characters)" maxlength="280" required rows="3"></textarea>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span class="text-small text-color-muted">
-                        <i class="fas fa-info-circle"></i> Maximum 280 characters
-                    </span>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-paper-plane"></i> Post Comment
-                    </button>
-                </div>
-            </form>
-            {% else %}
-            <div style="background-color: rgba(59, 130, 246, 0.1); border-radius: var(--border-radius); padding: 1rem; margin-bottom: 1.5rem; text-align: center;">
-                <p style="margin-bottom: 0.5rem;">
-                    <i class="fas fa-lock" style="color: var(--primary-color); margin-right: 0.5rem;"></i>
-                    Please <a href="{{ url_for('login', next=request.url) }}">login</a> to join the conversation
-                </p>
-            </div>
+{% block content %}
+<div class="bg-white rounded-lg shadow mb-8 p-6 relative overflow-hidden">
+    <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-600 to-green-500 rounded-t-lg"></div>
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="flex items-center gap-3 flex-1 justify-end pr-4">
+            {% if match.home_team and match.home_team.logo_url %}
+                <img src="{{ match.home_team.logo_url }}" alt="{{ match.home_team.name }}" class="h-12 w-auto">
             {% endif %}
-
-            <h4 style="font-size: 1.1rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-top: 1rem;">
-                <i class="fas fa-comment-dots"></i> 
-                {% if comments|length > 0 %}
-                    {{ comments|length }} {{ 'Comments' if comments|length > 1 else 'Comment' }}
-                {% else %}
-                    No Comments Yet
-                {% endif %}
-            </h4>
-
-            <div class="comments-container" style="margin-top: 1rem;">
-                {% for comment in comments %}
-                    <div class="comment" style="padding: 1rem; border-bottom: 1px solid var(--border-color); display: flex; gap: 1rem;">
-                        <div class="comment-avatar" style="flex-shrink: 0; width: 40px; height: 40px; background-color: var(--primary-color); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--surface-color); font-weight: bold;">
-                            {{ comment.author.username[:1].upper() }}
-                        </div>
-                        <div class="comment-content" style="flex-grow: 1;">
-                            <div class="comment-header" style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
-                                <span class="comment-author" style="font-weight: 600; color: var(--text-color);">{{ comment.author.username }}</span>
-                                <span class="comment-time text-monospace text-small" style="color: var(--text-color-muted);">{{ comment.timestamp.strftime('%b %d, %Y %H:%M') }}</span>
-                            </div>
-                            <p class="comment-text" style="margin-bottom: 0; font-size: 0.95rem;">{{ comment.text }}</p>
-                        </div>
-                    </div>
-                {% else %}
-                    <div class="no-comments text-center" style="padding: 2rem 0;">
-                        <div style="color: var(--text-color-lighter); margin-bottom: 0.5rem;">
-                            <i class="fas fa-comments" style="font-size: 2rem;"></i>
-                        </div>
-                        <p style="color: var(--text-color-muted);">Be the first to share your thoughts about this match!</p>
-                    </div>
-                {% endfor %}
-            </div>
+            <span class="text-xl font-bold">{{ match.home_team.name if match.home_team else 'N/A' }}</span>
+        </div>
+        <div class="flex flex-col items-center gap-1 min-w-[120px]">
+            {% if match.status == 'Finished' %}
+                <div class="text-2xl font-bold bg-gray-700 text-white px-4 py-1 rounded mb-1">{{ match.score_team1 if match.score_team1 is not none else '0' }} : {{ match.score_team2 if match.score_team2 is not none else '0' }}</div>
+                <span class="inline-block px-2 py-1 rounded bg-gray-700 text-white text-xs mb-1">Full Time</span>
+            {% elif match.status == 'Live' %}
+                <div class="text-2xl font-bold bg-red-500 text-white px-4 py-1 rounded mb-1 animate-pulse">{{ match.score_team1 if match.score_team1 is not none else '0' }} : {{ match.score_team2 if match.score_team2 is not none else '0' }}</div>
+                <span class="inline-block px-2 py-1 rounded bg-red-500 text-white text-xs mb-1 animate-pulse">LIVE</span>
+            {% elif match.status == 'Upcoming' %}
+                <div class="text-lg font-semibold mb-1"><i class="far fa-clock mr-1"></i> {{ match.match_date.strftime('%H:%M') if match.match_date else 'TBD' }}</div>
+                <span class="inline-block px-2 py-1 rounded bg-green-500 text-white text-xs mb-1">Upcoming</span>
+            {% else %}
+                <div class="text-lg font-mono mb-1">vs</div>
+                <span class="inline-block px-2 py-1 rounded bg-gray-300 text-gray-700 text-xs mb-1">{{ match.status }}</span>
+            {% endif %}
+            <div class="font-mono text-xs text-gray-400">{{ match.match_date.strftime('%A, %b %d, %Y') if match.match_date else 'Date TBD' }}</div>
+            {% if match.gameweek %}
+            <div class="mt-1"><span class="inline-block px-2 py-1 rounded bg-blue-500 text-white text-xs">Gameweek {{ match.gameweek }}</span></div>
+            {% endif %}
+        </div>
+        <div class="flex items-center gap-3 flex-1 justify-start pl-4">
+            <span class="text-xl font-bold">{{ match.away_team.name if match.away_team else 'N/A' }}</span>
+            {% if match.away_team and match.away_team.logo_url %}
+                <img src="{{ match.away_team.logo_url }}" alt="{{ match.away_team.name }}" class="h-12 w-auto">
+            {% endif %}
         </div>
     </div>
-
-    <div style="text-align: center; margin-top: 2rem;">
-        <a href="{{ url_for('home') }}" class="btn btn-secondary">Back to Feed</a>
+</div>
+<div class="bg-white rounded-lg shadow mb-8">
+    <div class="px-6 py-4 border-b">
+        <h3 class="text-lg font-semibold mb-0 flex items-center gap-2"><i class="fas fa-comments"></i> Match Discussion</h3>
     </div>
+    <div class="px-6 py-6">
+        {% if current_user.is_authenticated %}
+        <form method="POST" action="{{ url_for('match_discussion', match_id=match.id) }}" class="mb-6">
+            <textarea id="commentText" name="comment" class="w-full border rounded px-3 py-2 focus:outline-none focus:ring focus:border-blue-400 mb-2" placeholder="What are your thoughts on this match? (Max 280 characters)" maxlength="280" required rows="3"></textarea>
+            <div class="flex justify-between items-center">
+                <span class="text-xs text-gray-400"><i class="fas fa-info-circle"></i> Maximum 280 characters</span>
+                <button type="submit" class="px-4 py-2 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 transition"><i class="fas fa-paper-plane"></i> Post Comment</button>
+            </div>
+        </form>
+        {% else %}
+        <div class="bg-blue-50 rounded p-4 mb-6 text-center">
+            <p class="mb-2"><i class="fas fa-lock text-blue-600 mr-2"></i>Please <a href="{{ url_for('login', next=request.url) }}" class="text-blue-600 hover:underline">login</a> to join the conversation</p>
+        </div>
+        {% endif %}
+        <h4 class="text-base font-semibold border-b pb-2 mb-4 flex items-center gap-2"><i class="fas fa-comment-dots"></i> {% if comments|length > 0 %}{{ comments|length }} {{ 'Comments' if comments|length > 1 else 'Comment' }}{% else %}No Comments Yet{% endif %}</h4>
+        <div>
+            {% for comment in comments %}
+                <div class="flex gap-4 py-4 border-b last:border-b-0">
+                    <div class="flex-shrink-0 w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-lg">{{ comment.author.username[:1].upper() }}</div>
+                    <div class="flex-1">
+                        <div class="flex justify-between mb-1">
+                            <span class="font-semibold text-gray-800">{{ comment.author.username }}</span>
+                            <span class="font-mono text-xs text-gray-400">{{ comment.timestamp.strftime('%b %d, %Y %H:%M') }}</span>
+                        </div>
+                        <p class="mb-0 text-sm">{{ comment.text }}</p>
+                    </div>
+                </div>
+            {% else %}
+                <div class="text-center py-8 text-gray-400">
+                    <i class="fas fa-comments text-2xl mb-2"></i>
+                    <p>Be the first to share your thoughts about this match!</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<div class="text-center mt-8">
+    <a href="{{ url_for('home') }}" class="inline-block px-4 py-2 rounded bg-gray-200 text-gray-700 font-semibold hover:bg-gray-300 transition">Back to Feed</a>
+</div>
 {% endblock %}
