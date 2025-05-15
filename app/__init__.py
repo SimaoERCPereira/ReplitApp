@@ -7,7 +7,8 @@ import os
 
 def create_app():
     app = Flask(__name__, static_folder="../static", template_folder="../templates")
-    db_url = os.getenv("DATABASE_URL") or "sqlite:///instance/teamtalk.db"
+    db_path = os.path.join(app.instance_path, "teamtalk.db")
+    db_url = os.getenv("DATABASE_URL") or f"sqlite:///{db_path}"
     # Use SimpleCache on Replit, otherwise Redis
     if os.getenv("REPLIT_DB_URL") or os.getenv("REPL_OWNER"):
         cache_type = 'SimpleCache'
