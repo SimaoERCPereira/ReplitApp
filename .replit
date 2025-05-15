@@ -10,3 +10,7 @@ run = ["sh", "-c", "  python app_production.py"]
 [[ports]]
 localPort = 3000
 externalPort = 80
+
+[[ports]]
+localPort = 5000
+externalPort = 5000
