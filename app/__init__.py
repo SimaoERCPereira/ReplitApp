@@ -35,6 +35,11 @@ def create_app():
     def load_user(user_id):
         from .models import User
         return User.query.get(int(user_id))
+
+    @app.context_processor
+    def inject_now():
+        from datetime import datetime
+        return {'now': datetime.now()}
         
     cache.init_app(app)
     limiter.init_app(app)
