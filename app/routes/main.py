@@ -9,7 +9,9 @@ main_bp = Blueprint('main', __name__)
 @main_bp.route("/home")
 @cache.cached(timeout=120)
 def home():
+    from datetime import datetime
     selected_gameweek = request.args.get("gameweek", type=int)
+    now = datetime.now()
     gameweeks_query = (
         Match.query.with_entities(Match.gameweek)
         .filter(Match.gameweek.isnot(None))
