@@ -29,6 +29,13 @@ def create_app():
     with app.app_context():
         db.create_all()
     login_manager.init_app(app)
+    login_manager.login_view = 'auth.login'
+    
+    @login_manager.user_loader
+    def load_user(user_id):
+        from .models import User
+        return User.query.get(int(user_id))
+        
     cache.init_app(app)
     limiter.init_app(app)
     # Only enforce HTTPS in production
