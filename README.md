@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # The People's Pitch - Premier League Football Fan Community
 
 A responsive Flask web application for football fans to follow Premier League matches, view standings, and discuss matches with other supporters.
